@@ -16,9 +16,12 @@ namespace Application.Features.InsertNote.UseCase
 
         public async Task<InsertNoteOutput> Handle(InsertNoteInput request, CancellationToken cancellationToken)
         {
-            await _repository.InsertAsync("notes", request.Note);
+            var newId = await _repository.InsertAsync("notes", request.ToDomain());
 
-            return new InsertNoteOutput();
+            var result = request.ToDomain();
+            result.Id = newId;
+
+            return new InsertNoteOutput() { Note = result };
         }
     }
 }

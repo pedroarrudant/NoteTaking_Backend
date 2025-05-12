@@ -1,8 +1,8 @@
 ﻿using Application.Shared.Models;
 
-namespace Application.Features.InsertNote.Models
+namespace Application.Features.UpdateNote.Model
 {
-    public class InsertNoteOutput
+    internal class UpdateNoteOutput
     {
         public NoteModel Note { get; set; }
     }

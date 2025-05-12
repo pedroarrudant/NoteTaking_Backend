@@ -1,4 +1,6 @@
-﻿namespace Application.Shared.Models
+﻿using System.Text.Json.Serialization;
+
+namespace Application.Shared.Models
 {
     public class NoteModel
     {

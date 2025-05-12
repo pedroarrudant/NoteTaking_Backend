@@ -16,14 +16,29 @@ public class BasePostgresRepository<T> : IBaseRepository<T> where T : class
     public async Task<IEnumerable<T>> GetAllAsync(string tableName)
     {
         using var conn = _connectionFactory.CreateConnection();
-        var sql = $"SELECT * FROM {tableName}";
+        var sql = $@"
+                    SELECT 
+                        id,
+                        titulo,
+                        descricao,
+                        prioridade,
+                        data_criacao AS ""DataCriacao"",
+                        concluida
+                    FROM {tableName}";
         return await conn.QueryAsync<T>(sql);
     }
 
     public async Task<T?> GetByIdAsync(string tableName, object id)
     {
         using var conn = _connectionFactory.CreateConnection();
-        var sql = $"SELECT * FROM {tableName} WHERE id = @Id";
+        var sql = $@"
+                    SELECT 
+                        id,
+                        titulo,
+                        descricao,
+                        prioridade,
+                        data_criacao AS ""DataCriacao"",
+                        concluida FROM {tableName} WHERE id = @Id";
         return await conn.QueryFirstOrDefaultAsync<T>(sql, new { Id = id });
     }
 
@@ -48,7 +63,13 @@ public class BasePostgresRepository<T> : IBaseRepository<T> where T : class
     INSERT INTO {tableName}
     (titulo, descricao, prioridade, data_criacao, concluida)
     VALUES (@Titulo, @Descricao, @Prioridade, @DataCriacao, @Concluida)
-    RETURNING id;";
+    RETURNING 
+        id,
+        titulo,
+        descricao,
+        prioridade,
+        data_criacao AS ""DataCriacao"",
+        concluida;";
 
         var newId = await conn.ExecuteScalarAsync<int>(sql, new
         {
@@ -86,17 +107,21 @@ public class BasePostgresRepository<T> : IBaseRepository<T> where T : class
             titulo = @Titulo,
             descricao = @Descricao,
             prioridade = @Prioridade,
-            data_criacao = @DataCriacao,
             concluida = @Concluida
         WHERE id = @Id
-        RETURNING *;";
+        RETURNING 
+            id,
+            titulo,
+            descricao,
+            prioridade,
+            data_criacao AS ""DataCriacao"",
+            concluida;";
 
         var updatedNote = await conn.QuerySingleOrDefaultAsync<NoteModel>(sql, new
         {
             entity.Titulo,
             entity.Descricao,
             entity.Prioridade,
-            entity.DataCriacao,
             entity.Concluida,
             entity.Id
         });
